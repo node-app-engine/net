@@ -33,7 +33,7 @@
   },
   "config" : {
     "blanket": {
-      "pattern": ["/lib"]
+      "pattern": "//^((?!(node_modules|test)).)*$/"
     },
     "travis-cov": {
       "threshold": 80
