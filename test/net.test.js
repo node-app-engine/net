@@ -7,12 +7,12 @@ var path = require('path');
 var should = require('should');
 
 var getModule = function (options) {
-  return require(__dirname + '/../').create(options);
+  return require(__dirname + '/../').init(options);
 };
 
 var NET = require('net');
 var net = getModule({
-  'socketsPath' : __dirname + '/data/',
+  'socketsPath' : __dirname + '/tmp/',
   'address' : 'www.taobao.com',
   'deniedPorts' : [11211, 7899],
 });
@@ -25,13 +25,16 @@ var cleanFiles = function (dir, pattern) {
       }
     });
   } catch (ex) {
+    if ('ENOENT' === ex.code) {
+      fs.mkdirSync(dir);
+    }
   }
 };
 
 describe('sandbox modules interface', function () {
 
   beforeEach(function () {
-    cleanFiles(__dirname + '/data', /.+?\.sock$/);
+    cleanFiles(__dirname + '/tmp', /.+?\.sock$/);
   });
 
   /* {{{ should_net_interface_works_fine() */

@@ -29,7 +29,9 @@
   },
   "scripts": {
     "main"  : "index.js",
-    "test"  : "make test",
+    "test"  : "make test"
+  },
+  "config" : {
     "blanket": {
       "pattern": ["/lib"]
     },

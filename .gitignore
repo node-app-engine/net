@@ -11,4 +11,3 @@ bin
 *.md5
 *.cache
 coverage.html
-public/status.taobao
