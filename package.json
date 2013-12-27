@@ -4,19 +4,19 @@
   "keywords": [ "nae", "net" ],
   "version": "0.0.1",
   "author": "Aleafs Zhang (zhangxc83@gmail.com)",
-  "repository": { 
-    "type": "git", 
+  "repository": {
+    "type": "git",
     "url": "git@github.com:node-app-engine/net.git"
   },
   "homepage": "https://github.com/node-app-engine/net",
-  "contributors": [
-  ],
+  "bugs": {
+    "url": "https://github.com/node-app-engine/fs/issues",
+    "email": "fengmk2+nae@gmail.com"
+  },
   "dependencies": {
   },
-  "engines": {
-    "node": ">=0.10.21"
-  },
   "devDependencies": {
+    "contributors": "*",
     "benchmark" : "*",
     "should" : ">=0.6.3",
     "mocha" : ">=1.0.3",
@@ -29,7 +29,7 @@
   },
   "scripts": {
     "main"  : "index.js",
-    "test"  : "make test"
+    "test"  : "make test-all"
   },
   "config" : {
     "blanket": {
@@ -38,5 +38,9 @@
     "travis-cov": {
       "threshold": 80
     }
-  }
+  },
+  "engines": {
+    "node": ">=0.10.21"
+  },
+  "license": "MIT"
 }
