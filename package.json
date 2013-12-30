@@ -14,6 +14,7 @@
     "email": "fengmk2+nae@gmail.com"
   },
   "dependencies": {
+    "debug": ">=0.7.4"
   },
   "devDependencies": {
     "contributors": "*",
