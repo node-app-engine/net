@@ -2,7 +2,7 @@
   "name": "nae-net",
   "description": "safe protect for `net` module in NAE",
   "keywords": [ "nae", "net" ],
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Aleafs Zhang (zhangxc83@gmail.com)",
   "repository": {
     "type": "git",

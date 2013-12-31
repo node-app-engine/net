@@ -16,7 +16,7 @@ nae-net
 
 ```javascript
 
-var net = require('nae-net').init(options);
+var net = require('nae-net').create(options);
 net.createServer(function (c) {
   c.end('hello world');
 }).listen(8080);

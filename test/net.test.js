@@ -7,7 +7,7 @@ var path = require('path');
 var should = require('should');
 
 var getModule = function (options) {
-  return require(__dirname + '/../').init(options);
+  return require(__dirname + '/../').create(options);
 };
 
 var NET = require('net');
