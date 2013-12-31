@@ -14,7 +14,7 @@ var NET = require('net');
 var net = getModule({
   'socketsPath' : __dirname + '/tmp/',
   'address' : 'www.taobao.com',
-  'deniedPorts' : [11211, 7899],
+  'allowedPort' : [11222, 11233],
 });
 
 var cleanFiles = function (dir, pattern) {
