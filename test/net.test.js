@@ -97,6 +97,7 @@ describe('sandbox modules interface', function () {
   });
   /* }}} */
 
+  /* {{{ should_invalid_tcp_request_works_fine() */
   it('should_invalid_tcp_request_works_fine', function (done) {
     var _me = net.createServer(function (socket) {
       socket.pipe(socket);
@@ -133,6 +134,19 @@ describe('sandbox modules interface', function () {
         });
         this.on('close', alldone);
       });
+    });
+  });
+  /* }}} */
+
+  it('should_listen_to_0_works_fine', function (done) {
+    net.createServer(function (socket) {
+      socket.close();
+    }).listen(0, function () {
+      this.address().should.eql({
+         port: 8080, address: 'www.taobao.com'
+      });
+      this.close();
+      done();
     });
   });
 
