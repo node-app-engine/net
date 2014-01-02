@@ -215,7 +215,7 @@ describe('sandbox modules interface', function () {
         should.ok(!err);
         this.end('abcdefghijk');    // 11 characters
         this.on('data', function (data) {
-          //console.log('' + data);
+          data.toString().should.eql('abcdefghijk');
         });
         this.on('close', alldone);
       });
