@@ -31,6 +31,100 @@ var cleanFiles = function (dir, pattern) {
   }
 };
 
+describe('net stack parser interface', function () {
+
+  var Stack = require(__dirname + '/../lib/stack.js');
+
+  /* {{{ should_unmatched_package_head_works_fine() */
+  it('should_unmatched_package_head_works_fine', function (done) {
+    var _me = new Stack.Parser();
+    _me.once('end', function (mix, buf) {
+      mix.should.eql({});
+      buf.toString().should.eql('hello');
+      done();
+    });
+    _me.push(new Buffer('hello'), true);
+  });
+  /* }}} */
+
+  /* {{{ should_too_small_package_head_works_fine() */
+  it('should_too_small_package_head_works_fine', function (done) {
+    var _me = new Stack.Parser();
+    _me.once('end', function (mix, buf) {
+      mix.should.eql({});
+      buf.toString().should.eql('hel');
+      done();
+    });
+    _me.push(new Buffer('hel'), true);
+  });
+  /* }}} */
+
+  /* {{{ should_invalid_data_length_works_fine() */
+  it('should_invalid_data_length_works_fine', function (done) {
+    var _me = new Stack.Parser();
+    _me.once('end', function (mix, buf) {
+      mix.should.eql({});
+      buf.toString().should.eql('[NAE]:3');
+      done();
+    });
+    _me.push(new Buffer('[NAE]'));
+    _me.push(new Buffer(':3'), true);
+  });
+  /* }}} */
+
+  /* {{{ should_uncomplete_data_length_works_fine() */
+  it('should_uncomplete_data_length_works_fine', function (done) {
+    var _me = new Stack.Parser();
+    _me.once('end', function (mix, buf) {
+      mix.should.eql({'a' : 'b'});
+      buf.toString().should.eql('');
+      done();
+    });
+    _me.push(new Buffer('[NAE]:'));
+
+    var buf = new Buffer(4);
+    buf.writeUInt8(12, 0);
+    _me.push(buf);
+    _me.push(new Buffer('{"a":"b"}'), true);
+  });
+  /* }}} */
+
+  /* {{{ should_json_parse_error_works_fine() */
+  it('should_json_parse_error_works_fine', function (done) {
+    var _me = new Stack.Parser();
+    _me.once('end', function (mix, buf) {
+      mix.should.eql({});
+      buf.toString().should.eql('[NAE]:\u0007\u0000\u0000\u0000{\"a\":\"b\"');
+      done();
+    });
+    _me.push(new Buffer('[NAE]:'));
+
+    var buf = new Buffer(4);
+    buf.writeUInt8(7, 0);
+    _me.push(buf);
+    _me.push(new Buffer('{"a":"b"'), true);
+  });
+  /* }}} */
+
+  /* {{{ should_normal_package_works_fine() */
+  it('should_normal_package_works_fine', function (done) {
+    var _me = new Stack.Parser();
+    _me.once('end', function (mix, buf) {
+      mix.should.eql({'a' : 'b'});
+      buf.toString().should.eql('GET / HTTP1.1\r\n');
+      done();
+    });
+    _me.push(new Buffer('[NAE]:'));
+
+    var buf = new Buffer(4);
+    buf.writeUInt8(9, 0);
+    _me.push(buf);
+    _me.push(new Buffer('{"a":"b"}GET / HTTP1.1\r\n'), true);
+  });
+  /* }}} */
+
+});
+
 describe('sandbox modules interface', function () {
 
   beforeEach(function () {
@@ -138,6 +232,7 @@ describe('sandbox modules interface', function () {
   });
   /* }}} */
 
+  /* {{{ should_listen_to_0_works_fine() */
   it('should_listen_to_0_works_fine', function (done) {
     net.createServer(function (socket) {
       socket.close();
@@ -149,6 +244,7 @@ describe('sandbox modules interface', function () {
       done();
     });
   });
+  /* }}} */
 
   /* {{{ */
   it('clean', function () {
