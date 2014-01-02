@@ -119,7 +119,7 @@ describe('net stack parser interface', function () {
     var buf = new Buffer(4);
     buf.writeUInt8(9, 0);
     _me.push(buf);
-    _me.push(new Buffer('{"a":"b"}GET / HTTP1.1\r\n'), true);
+    _me.push(new Buffer('{"a":"b"}GET / HTTP1.1\r\n'));
   });
   /* }}} */
 
@@ -171,11 +171,16 @@ describe('sandbox modules interface', function () {
       NET.createConnection({'path' : _me._pipeName}, function (err) {
         should.ok(!err);
 
-        var str = '220.37.24.113:77291';
-        var buf = new Buffer(4 + str.length + 3);
-        buf.writeUInt8(str.length, 0);
-        buf.write(str, 4);
-        buf.write('779', 4 + str.length);
+        var str = JSON.stringify({
+          'remoteAddress' : '220.37.24.113',
+          'remotePort' : 77291,
+        });
+
+        var buf = new Buffer(10 + str.length + 3);
+        buf.write('[NAE]:');
+        buf.writeUInt8(str.length, 6);
+        buf.write(str, 10);
+        buf.write('779', 10 + str.length);
 
         this.write(buf);
         this.end(', to be end.');
