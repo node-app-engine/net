@@ -100,6 +100,7 @@ describe('net stack parser interface', function () {
     _me.push(new Buffer('[NAE]:'));
 
     var buf = new Buffer(4);
+    buf.fill(0);
     buf.writeUInt8(7, 0);
     _me.push(buf);
     _me.push(new Buffer('{"a":"b"'), true);
@@ -165,7 +166,7 @@ describe('sandbox modules interface', function () {
     _me.listen(11222);
     _me.listen(11222, function () {
       _me.address().should.eql({
-        'port' : 11222, 'address' : 'www.taobao.com'
+        'port' : 11222, 'family' : 'IPv4', 'address' : 'www.taobao.com'
       });
 
       NET.createConnection({'path' : _me._pipeName}, function (err) {
@@ -243,7 +244,7 @@ describe('sandbox modules interface', function () {
       socket.close();
     }).listen(0, function () {
       this.address().should.eql({
-         port: 8080, address: 'www.taobao.com'
+        port: 8080, family : 'IPv4', address: 'www.taobao.com'
       });
       this.close();
       done();
