@@ -12,30 +12,10 @@ var getModule = function (options) {
 
 var NET = require('net');
 var net = getModule({
-  'socketsPath' : __dirname + '/tmp/',
-  'address' : 'www.taobao.com',
-  'allowedPort' : [11222, 11233],
+  'appname' : 'test'
 });
 
-var cleanFiles = function (dir, pattern) {
-  try {
-    fs.readdirSync(dir).forEach(function (fn) {
-      if (pattern.test(fn)) {
-        fs.unlinkSync(path.join(dir, fn));
-      }
-    });
-  } catch (ex) {
-    if ('ENOENT' === ex.code) {
-      fs.mkdirSync(dir);
-    }
-  }
-};
-
 describe('sandbox modules interface', function () {
-
-  beforeEach(function () {
-    cleanFiles(__dirname + '/tmp', /.+?\.sock$/);
-  });
 
   /* {{{ should_net_interface_works_fine() */
   it('should_net_interface_works_fine', function (done) {
@@ -59,106 +39,23 @@ describe('sandbox modules interface', function () {
       });
     }).should.throw('Invalid listen argument, please use numeric port to listen.');
 
-    (function () {
-      _me.listen(11211);
-    }).should.throw('EACCES, Permission denied (11211).');
-
     var __message = [];
-    _me.close();
     _me.listen(11222, function () {
       __message.push('listen1');
     });
     _me.listen(11222);
     _me.listen(11222, function () {
-      _me.address().should.eql({
-        'port' : 11222, 'family' : 'IPv4', 'address' : 'www.taobao.com'
-      });
-
-      NET.createConnection({'path' : _me._pipeName}, function (err) {
+      var mapPort = _me.address().port;
+      NET.createConnection(mapPort, function (err) {
         should.ok(!err);
-
-        var str = JSON.stringify({
-          'remoteAddress' : '220.37.24.113',
-          'remotePort' : 77291,
+        this.on('close', function () {
+          _me.close();
+          __message.should.include('listen1');
+          done();
         });
-
-        var buf = new Buffer(10 + str.length + 3);
-        buf.write('[NAE]:');
-        buf.writeUInt8(str.length, 6);
-        buf.write(str, 10);
-        buf.write('779', 10 + str.length);
-
-        this.write(buf);
-        this.end(', to be end.');
-        this.on('data', function (data) {
-          String(data).should.eql('hello [220.37.24.113:77291]:779, to be end.');
-          _me.close(function () {
-            __message.should.include('listen1');
-            done();
-          });
-        });
+        this.write('hello');
       });
     });
-  });
-  /* }}} */
-
-  /* {{{ should_invalid_tcp_request_works_fine() */
-  it('should_invalid_tcp_request_works_fine', function (done) {
-    var _me = net.createServer(function (socket) {
-      socket.pipe(socket);
-    });
-
-    var num = 0;
-    var alldone = function () {
-      if (0 === (--num)) {
-        _me.close();
-        done();
-      }
-    };
-    _me.listen(11233, function () {
-      num++;
-      NET.createConnection({'path' : _me._pipeName}, function (err) {
-        should.ok(!err);
-        this.end('abcdefghijk');    // 11 characters
-        this.on('data', function (data) {
-          data.toString().should.eql('abcdefghijk');
-        });
-        this.on('close', alldone);
-      });
-
-      num++;
-      NET.createConnection({'path' : _me._pipeName}, function (err) {
-        should.ok(!err);
-        var str = '110.23.1.1:4434';
-        var buf = new Buffer(4 + str.length - 1);
-        buf.writeUInt8(str.length, 0);
-        buf.write(str, 4);
-        this.end(buf);
-        this.on('data', function (data) {
-          //console.log('' + data);
-        });
-        this.on('close', alldone);
-      });
-    });
-  });
-  /* }}} */
-
-  /* {{{ should_listen_to_0_works_fine() */
-  it('should_listen_to_0_works_fine', function (done) {
-    net.createServer(function (socket) {
-      socket.close();
-    }).listen(0, function () {
-      this.address().should.eql({
-        port: 8080, family : 'IPv4', address: 'www.taobao.com'
-      });
-      this.close();
-      done();
-    });
-  });
-  /* }}} */
-
-  /* {{{ */
-  it('clean', function () {
   });
   /* }}} */
 
